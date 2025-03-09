@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // Salvar os dados no Firestore
+        // Salvar os dados no Firestore (incluindo o campo "fotos")
         try {
             await db.collection("relatorios").add({
                 usuario,
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 maquina,
                 pendencia: codigoPendencia,
                 data,
-                fotos: fotosUrls,
+                fotos: fotosUrls,  // 🔥 Agora salvando as fotos no Firestore
                 timestamp: new Date()
             });
 
