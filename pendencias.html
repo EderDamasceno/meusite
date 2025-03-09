@@ -41,7 +41,7 @@
 
             for (let parque of parques) {
                 const parqueDiv = document.createElement("div");
-                parqueDiv.innerHTML = <h3>${parque}</h3>;
+                parqueDiv.innerHTML = '<h3>${parque}</h3>';
                 
                 const maquinas = [
                     ${parque}-01, ${parque}-02, ${parque}-03, ${parque}-04, ${parque}-05, 
@@ -50,7 +50,7 @@
 
                 for (let maquina of maquinas) {
                     const maquinaDiv = document.createElement("div");
-                    maquinaDiv.innerHTML = <h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>;
+                    maquinaDiv.innerHTML = '<h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>';
                     parqueDiv.appendChild(maquinaDiv);
 
                     // Buscar pendências no Firestore
@@ -65,7 +65,7 @@
                         snapshot.forEach(doc => {
                             const data = doc.data();
                             const li = document.createElement("li");
-                            li.textContent = ${data.pendencia} - ${data.data};
+                            li.textContent = '${data.pendencia} - ${data.data}';
                             pendenciasUl.appendChild(li);
                         });
                     }
