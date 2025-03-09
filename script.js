@@ -67,9 +67,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         body: formData
                     });
 
-                    const data = await response.json();
-                    if (data.secure_url) {
-                        fotosUrls.push(data.secure_url); // Obtém o link seguro da imagem
+                    const result = await response.json();
+                    if (result.secure_url) {
+                        fotosUrls.push(result.secure_url); // Obtém o link seguro da imagem
                     }
                 } catch (error) {
                     console.error("❌ Erro ao enviar imagem para Cloudinary:", error);
