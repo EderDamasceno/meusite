@@ -77,6 +77,20 @@
 
         document.addEventListener("DOMContentLoaded", carregarPendencias);
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("✅ Página pendencias.html carregada com sucesso!");
+    
+            const listaParques = document.getElementById("lista-parques");
+    
+            if (!listaParques) {
+                console.error("❌ ERRO: O elemento #lista-parques não foi encontrado!");
+                return;
+            }
+    
+            listaParques.innerHTML = "<p>✅ O JavaScript está funcionando corretamente!</p>";
+        });
+    </script>
 
 </body>
 </html>
