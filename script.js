@@ -7,11 +7,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const parqueSelect = document.getElementById("parque");
     const maquinaSelect = document.getElementById("maquina");
     const pendenciaSelect = document.getElementById("pendencia");
+    const novaPendenciaInput = document.getElementById("nova-pendencia");
     const usuarioInput = document.getElementById("usuario");
     const dataInput = document.getElementById("data");
     const fotosInput = document.getElementById("fotos");
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
+
+    // Configuração do Cloudinary
+    const cloudName = "dd56l8go8";
+    const uploadPreset = "pendencias_upload";
 
     // Estrutura de máquinas por parque
     const maquinasPorParque = {
@@ -21,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
     };
 
-    // Atualizar a lista de máquinas ao selecionar um parque
+    // Atualizar máquinas ao selecionar um parque
     parqueSelect.addEventListener("change", function () {
         console.log("🌍 Parque selecionado:", parqueSelect.value);
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
@@ -36,6 +41,61 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Carregar pendências existentes do Firestore
+    async function carregarPendencias() {
+        console.log("📥 Carregando pendências...");
+        pendenciaSelect.innerHTML = '<option value="">Escolha uma pendência...</option>';
+
+        try {
+            const snapshot = await db.collection("pendencias").get();
+            if (snapshot.empty) {
+                console.warn("⚠️ Nenhuma pendência encontrada no Firestore.");
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                console.log("📌 Pendência encontrada:", data);
+
+                const option = document.createElement("option");
+                option.value = data.codigo;
+                option.textContent = ${data.codigo} - ${data.descricao};
+                pendenciaSelect.appendChild(option);
+            });
+
+            console.log("✅ Pendências carregadas com sucesso!");
+        } catch (error) {
+            console.error("❌ Erro ao carregar pendências:", error);
+        }
+    }
+    carregarPendencias();
+
+    // Função para fazer upload das imagens para o Cloudinary
+    async function uploadImagem(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
+        try {
+            const response = await fetch(https://api.cloudinary.com/v1_1/${cloudName}/image/upload, {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.secure_url) {
+                console.log("📸 Imagem enviada:", result.secure_url);
+                return result.secure_url;
+            } else {
+                console.warn("⚠️ Erro ao obter URL da imagem");
+                return null;
+            }
+        } catch (error) {
+            console.error("❌ Erro ao enviar imagem para Cloudinary:", error);
+            return null;
+        }
+    }
+
     // Evento de envio do formulário
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -44,6 +104,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const maquina = maquinaSelect.value;
         const usuario = usuarioInput.value;
         const data = dataInput.value;
+        const pendenciaSelecionada = pendenciaSelect.value;
+        const novaPendencia = novaPendenciaInput.value.trim();
 
         if (!parque || !maquina || !usuario || !data) {
             mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
@@ -51,16 +113,43 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        let codigoPendencia = pendenciaSelecionada || null;
+        if (!pendenciaSelecionada && novaPendencia) {
+            codigoPendencia = "P" + Math.floor(100 + Math.random() * 900);
+            await db.collection("pendencias").add({
+                codigo: codigoPendencia,
+                descricao: novaPendencia,
+                timestamp: new Date()
+            });
+        }
+
+        // Upload de fotos
+        let fotosUrls = [];
+        if (fotosInput.files.length > 0) {
+            for (let file of fotosInput.files) {
+                const url = await uploadImagem(file);
+                if (url) fotosUrls.push(url);
+            }
+        }
+
+        // Salvar os dados no Firestore
         try {
             await db.collection("relatorios").add({
-                usuario, parque, maquina, data, timestamp: new Date()
+                usuario,
+                parque,
+                maquina,
+                pendencia: codigoPendencia,
+                data,
+                fotos: fotosUrls,
+                timestamp: new Date()
             });
 
-            mensagemSucesso.innerText = "✅ Relatório salvo!";
+            mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
             mensagemSucesso.style.display = "block";
             form.reset();
+            carregarPendencias();
         } catch (error) {
-            console.error("❌ Erro ao salvar relatório:", error);
+            console.error("❌ Erro ao salvar relatório no Firestore:", error);
             mensagemErro.innerText = "Erro ao salvar relatório. Tente novamente!";
             mensagemErro.style.display = "block";
         }
