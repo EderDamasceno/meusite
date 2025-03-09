@@ -97,13 +97,14 @@ firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
                                 try {
                                     const pendenciaSnapshot = await db.collection("pendencias").where("Código", "==", pendenciaCodigo).get();
-                                    if (!pendenciaSnapshot.empty) {
+
+                                if (!pendenciaSnapshot.empty) {
                                     pendenciaSnapshot.forEach(doc => {
-                                        descricaoPendencia = doc.data().Descrição; 
+                                        descricaoPendencia = doc.data().Descrição;
                                     });
-                                    } else {
-                                        console.warn('⚠️ Código ${pendenciaCodigo} não encontrado na coleção "pendencias".');
-                                    }
+                                } else {
+                                    console.warn(`⚠️ Código ${pendenciaCodigo} não encontrado na coleção "pendencias".)`;
+                                }
                                     if (pendenciaDoc.exists) {
                                         descricaoPendencia = pendenciaDoc.data().descricao;
                                     }
