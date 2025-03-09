@@ -42,47 +42,34 @@
             for (let parque of parques) {
                 const parqueDiv = document.createElement("div");
                 parqueDiv.innerHTML = '<h3>${parque}</h3>';
-                
+
                 const maquinas = [
                     '${parque}-01', '${parque}-02', '${parque}-03', '${parque}-04', '${parque}-05', 
                     '${parque}-06', '${parque}-07', '${parque}-08', '${parque}-09'
                 ];
 
                 for (let maquina of maquinas) {
-                    const maquinaDiv = document.createElement("div");
-                    maquinaDiv.innerHTML = '<h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>';
-                    parqueDiv.appendChild(maquinaDiv);
-
-                    // Buscar pendências no Firestore
-                    maquinaDiv.innerHTML = '<h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>';
-                    parqueDiv.appendChild(maquinaDiv);
-
-                    // Agora que o elemento foi criado, podemos pegá-lo
+                    // Criando um novo container para a máquina
                     const maquinaDiv = document.createElement("div");
 
-                    // Criando o elemento UL ANTES de acessá-lo
+                    // Criando o título da máquina
+                    const tituloMaquina = document.createElement("h4");
+                    tituloMaquina.textContent = maquina;
+
+                    // Criando a lista UL onde as pendências serão exibidas
                     const pendenciasUl = document.createElement("ul");
                     pendenciasUl.id = 'pendencias-${maquina}';
                     pendenciasUl.innerHTML = "Carregando...";
 
-                    // Agora adicionamos o título e a lista ao container da máquina
-                    maquinaDiv.innerHTML = '<h4>${maquina}</h4>';
+                    // Adicionamos o título e a lista ao container da máquina
+                    maquinaDiv.appendChild(tituloMaquina);
                     maquinaDiv.appendChild(pendenciasUl);
                     parqueDiv.appendChild(maquinaDiv);
 
                     // Agora que o elemento UL foi criado e adicionado ao DOM, podemos limpá-lo corretamente
                     pendenciasUl.innerHTML = "";
 
-                    pendenciasUl.innerHTML = "";
-
-                    if (pendenciasUl) {
-                        pendenciasUl.innerHTML = "";
-                    } else {
-                    console.error('❌ ERRO: Elemento pendencias-${maquina} não encontrado!');
-                    continue; // Pula essa máquina para evitar erro
-                    }
-                    
-
+                    // Buscar pendências no Firestore
                     const snapshot = await db.collection("relatorios").where("maquina", "==", maquina).get();
 
                     if (snapshot.empty) {
@@ -103,6 +90,7 @@
 
         document.addEventListener("DOMContentLoaded", carregarPendencias);
     </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             console.log("✅ Página pendencias.html carregada com sucesso!");
