@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendências das Máquinas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h2>Pendências das Máquinas - Ventos de Serra do Mel II</h2>
+
+    <div id="lista-parques"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        console.log("🚀 Firebase carregado na página de pendências!");
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+            authDomain: "meusite-132ec.firebaseapp.com",
+            projectId: "meusite-132ec",
+            storageBucket: "meusite-132ec.appspot.com",
+            messagingSenderId: "558888153171",
+            appId: "1:558888153171:web:5845f24da583581aa556a6",
+            measurementId: "G-4WW93D6ZD6"
+        };
+
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function carregarPendencias() {
+            const listaParques = document.getElementById("lista-parques");
+            listaParques.innerHTML = "";
+
+            const parques = ["VPB III", "VPB IV", "VMA I", "VMA II"];
+
+            for (let parque of parques) {
+                const parqueDiv = document.createElement("div");
+                parqueDiv.innerHTML = <h3>${parque}</h3>;
+                
+                const maquinas = [
+                    ${parque}-01, ${parque}-02, ${parque}-03, ${parque}-04, ${parque}-05, 
+                    ${parque}-06, ${parque}-07, ${parque}-08, ${parque}-09
+                ];
+
+                for (let maquina of maquinas) {
+                    const maquinaDiv = document.createElement("div");
+                    maquinaDiv.innerHTML = <h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>;
+                    parqueDiv.appendChild(maquinaDiv);
+
+                    // Buscar pendências no Firestore
+                    const pendenciasUl = maquinaDiv.querySelector(#pendencias-${maquina});
+                    pendenciasUl.innerHTML = "";
+
+                    const snapshot = await db.collection("relatorios").where("maquina", "==", maquina).get();
+
+                    if (snapshot.empty) {
+                        pendenciasUl.innerHTML = "<li>Sem pendências registradas.</li>";
+                    } else {
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const li = document.createElement("li");
+                            li.textContent = ${data.pendencia} - ${data.data};
+                            pendenciasUl.appendChild(li);
+                        });
+                    }
+                }
+
+                listaParques.appendChild(parqueDiv);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", carregarPendencias);
+    </script>
+
+</body>
+</html>

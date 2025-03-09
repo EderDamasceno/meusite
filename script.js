@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     codigoPendencia = docRef.data().codigo;
                 }
             } else if (novaPendencia) {
-                codigoPendencia = "P-" + Date.now();
+                codigoPendencia = "P" + Math.floor(100 + Math.random() * 900);
                 await db.collection("pendencias").add({
                     descricao: novaPendencia,
                     codigo: codigoPendencia,
