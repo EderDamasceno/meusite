@@ -63,7 +63,7 @@ firebasejs/9.6.1/firebase-firestore-compat.js"></script>
                     // Criando a lista UL onde as pendências serão exibidas
                     const pendenciasUl = 
 
-document.createElement("ul");
+                    document.createElement("ul");
                     pendenciasUl.id = `pendencias-${maquina}`;
                     pendenciasUl.innerHTML = "Carregando...";
 
@@ -96,7 +96,14 @@ document.createElement("ul");
                                 let descricaoPendencia = "Descrição não encontrada";
 
                                 try {
-                                    const pendenciaDoc = await db.collection("pendencias").doc(pendenciaCodigo).get();
+                                    const pendenciaSnapshot = await db.collection("pendencias").where("Código", "==", pendenciaCodigo).get();
+                                    if (!pendenciaSnapshot.empty) {
+                                    pendenciaSnapshot.forEach(doc => {
+                                        descricaoPendencia = doc.data().Descrição; 
+                                    });
+                                    } else {
+                                        console.warn('⚠️ Código ${pendenciaCodigo} não encontrado na coleção "pendencias".');
+                                    }
                                     if (pendenciaDoc.exists) {
                                         descricaoPendencia = pendenciaDoc.data().descricao;
                                     }
