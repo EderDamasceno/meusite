@@ -1,7 +1,7 @@
 console.log("🚀 Script.js carregado e pronto!");
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ DOM totalmente carregado!");
+    console.log("✅ DOM carregado com sucesso!");
 
     const form = document.getElementById("form-relatorio");
     const parqueSelect = document.getElementById("parque");
@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagemErro = document.getElementById("mensagem-erro");
 
     // Configuração do Cloudinary
-    const cloudName = "dd56l8go8";
-    const uploadPreset = "pendencias_upload";
+    const cloudName = "dd56l8go8"; // Seu Cloud Name
+    const uploadPreset = "pendencias_upload"; // Seu Upload Preset
 
     // Estrutura de máquinas por parque
     const maquinasPorParque = {
