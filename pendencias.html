@@ -78,7 +78,7 @@ document.createElement("ul");
                     // Buscar pendências no Firestore
 
                     try {
-                        const snapshot = await db.collection("relatorios").where("Maquina", "==", maquina).get();
+                        const snapshot = await db.collection("relatorios").where("maquina", "==", maquina).get();
 
                         if (snapshot.empty) {
                             console.warn(`⚠️ Nenhuma pendência encontrada para ${maquina}.`);
