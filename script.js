@@ -1,34 +1,28 @@
-// Importa o Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
-console.log("🚀 Script.js carregado e iniciando Firebase...");
-
-// Configuração do Firebase (certifique-se de usar os dados corretos do seu projeto)
-const firebaseConfig = {
-    apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
-    authDomain: "meusite-132ec.firebaseapp.com",
-    projectId: "meusite-132ec",
-    storageBucket: "meusite-132ec.appspot.com",
-    messagingSenderId: "558888153171",
-    appId: "1:558888153171:web:5845f24da583581aa556a6",
-    measurementId: "G-4WW93D6ZD6"
-};
-
-// Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-console.log("🔥 Firebase inicializado com sucesso!");
+console.log("🚀 Script.js carregado e pronto!");
 
 // Captura o formulário de contato
 document.addEventListener("DOMContentLoaded", function () {
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+        authDomain: "meusite-132ec.firebaseapp.com",
+        projectId: "meusite-132ec",
+        storageBucket: "meusite-132ec.appspot.com",
+        messagingSenderId: "558888153171",
+        appId: "1:558888153171:web:5845f24da583581aa556a6",
+        measurementId: "G-4WW93D6ZD6"
+    };
+
+    // Inicializa Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const form = document.getElementById("form-contato");
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
 
     if (form) {
         form.addEventListener("submit", async function (event) {
-            event.preventDefault(); // Evita recarregar a página
+            event.preventDefault(); // Evita o recarregamento da página
 
             // Captura os valores do formulário
             const nome = document.getElementById("nome").value;
@@ -37,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
                 // Salva os dados no Firestore
-                await addDoc(collection(db, "mensagens"), {
+                await db.collection("mensagens").add({
                     nome: nome,
                     email: email,
                     mensagem: mensagem,
@@ -61,25 +55,25 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.error("❌ ERRO: Formulário não encontrado!");
     }
-});
 
-// Teste automático de Firestore ao carregar a página
-async function testarFirestore() {
-    console.log("🔍 Testando conexão com Firestore...");
+    // Teste automático de Firestore ao carregar a página
+    async function testarFirestore() {
+        console.log("🔍 Testando conexão com Firestore...");
 
-    try {
-        await addDoc(collection(db, "mensagens"), {
-            nome: "Teste Firestore",
-            email: "teste@email.com",
-            mensagem: "Se essa mensagem aparecer no Firestore, está funcionando!",
-            timestamp: new Date()
-        });
+        try {
+            await db.collection("mensagens").add({
+                nome: "Teste Firestore",
+                email: "teste@email.com",
+                mensagem: "Se essa mensagem aparecer no Firestore, está funcionando!",
+                timestamp: new Date()
+            });
 
-        console.log("✅ Dados enviados para o Firestore com sucesso!");
-    } catch (error) {
-        console.error("❌ Erro ao conectar com Firestore:", error);
+            console.log("✅ Dados enviados para o Firestore com sucesso!");
+        } catch (error) {
+            console.error("❌ Erro ao conectar com Firestore:", error);
+        }
     }
-}
 
-// Teste automático ao carregar o site
-testarFirestore();
+    // Teste automático ao carregar o site
+    testarFirestore();
+});

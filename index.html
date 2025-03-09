@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Primeiro Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
     <nav>
         <ul>
             <li><a href="#inicio">Início</a></li>
@@ -8,56 +15,115 @@
             <li><a href="#contato">Contato</a></li>
         </ul>
     </nav>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Primeiro Site</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <body>
-        <header id="inicio" class="animacao">
-            <h1>Bem-vindo ao Meu Site!</h1>
-            <p>Este é um site moderno e estilizado com CSS.</p>
-        </header>
-        
-        <section class="container">
-            <div class="box animacao" id="sobre">
-                <h2>Sobre</h2>
-                <p>Este site foi criado como parte do meu aprendizado em desenvolvimento web.</p>
-            </div>
-        
-            <div class="box animacao" id="servicos">
-                <h2>Serviços</h2>
-                <p>Criação de sites, blogs e páginas personalizadas para negócios e projetos.</p>
-            </div>
-        
-            <div class="box animacao" id="contato">
-                <h2>Contato</h2>
-                <p>Preencha o formulário abaixo para entrar em contato.</p>
-            </div>
-        </section>
-        
-            <form action="obrigado.html" method="GET">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" required>
-            
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="_replyto" required>
-            
-                <label for="mensagem">Mensagem:</label>
-                <textarea id="mensagem" name="mensagem" required></textarea>
-            
-                <button type="submit">Enviar</button>
-            </form>
-            <p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;">Mensagem enviada com sucesso!</p>
-        </section>
-    
-        <footer>
-            <p>&copy; 2024 Meu Site. Todos os direitos reservados.</p>
-        </footer>
-        <button id="btn-topo">↑</button>
-    </body>
+
+    <header id="inicio" class="animacao">
+        <h1>Bem-vindo ao Meu Site!</h1>
+        <p>Este é um site moderno e estilizado com CSS.</p>
+    </header>
+
+    <section class="container">
+        <div class="box animacao" id="sobre">
+            <h2>Sobre</h2>
+            <p>Este site foi criado como parte do meu aprendizado em desenvolvimento web.</p>
+        </div>
+
+        <div class="box animacao" id="servicos">
+            <h2>Serviços</h2>
+            <p>Criação de sites, blogs e páginas personalizadas para negócios e projetos.</p>
+        </div>
+
+        <div class="box animacao" id="contato">
+            <h2>Contato</h2>
+            <p>Preencha o formulário abaixo para entrar em contato.</p>
+        </div>
+    </section>
+
+    <form id="form-contato">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="_replyto" required>
+
+        <label for="mensagem">Mensagem:</label>
+        <textarea id="mensagem" name="mensagem" required></textarea>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;">Mensagem enviada com sucesso!</p>
+
+    <footer>
+        <p>&copy; 2024 Meu Site. Todos os direitos reservados.</p>
+    </footer>
+
+    <button id="btn-topo">↑</button>
+
+    <!-- Firebase SDK (sem import) -->
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
+
+    <script>
+        console.log("🚀 Firebase carregado diretamente pelo index.html!");
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+            authDomain: "meusite-132ec.firebaseapp.com",
+            projectId: "meusite-132ec",
+            storageBucket: "meusite-132ec.appspot.com",
+            messagingSenderId: "558888153171",
+            appId: "1:558888153171:web:5845f24da583581aa556a6",
+            measurementId: "G-4WW93D6ZD6"
+        };
+
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        console.log("🔥 Firebase inicializado sem import!");
+
+        // Função para salvar mensagens no Firestore
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("form-contato");
+            const mensagemSucesso = document.getElementById("mensagem-sucesso");
+
+            if (form) {
+                form.addEventListener("submit", async function (event) {
+                    event.preventDefault(); // Evita recarregar a página
+
+                    // Captura os valores do formulário
+                    const nome = document.getElementById("nome").value;
+                    const email = document.getElementById("email").value;
+                    const mensagem = document.getElementById("mensagem").value;
+
+                    try {
+                        // Salva os dados no Firestore
+                        await db.collection("mensagens").add({
+                            nome: nome,
+                            email: email,
+                            mensagem: mensagem,
+                            timestamp: new Date()
+                        });
+
+                        console.log("✅ Dados enviados para o Firestore com sucesso!");
+
+                        // Exibe mensagem de sucesso
+                        mensagemSucesso.style.display = "block";
+                        form.reset();
+
+                        // Redireciona para a página "Obrigado" após 2 segundos
+                        setTimeout(() => {
+                            window.location.href = "obrigado.html";
+                        }, 2000);
+                    } catch (error) {
+                        console.error("❌ Erro ao conectar com Firestore:", error);
+                    }
+                });
+            } else {
+                console.error("❌ ERRO: Formulário não encontrado!");
+            }
+        });
+    </script>
+
 </body>
 </html>
