@@ -3,101 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Primeiro Site</title>
+    <title>Relatório de Pendências - Ventos de Serra do Mel II</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="#inicio">Início</a></li>
-            <li><a href="#sobre">Sobre</a></li>
-            <li><a href="#servicos">Serviços</a></li>
-            <li><a href="#contato">Contato</a></li>
-        </ul>
-    </nav>
 
-    <header id="inicio" class="animacao">
-        <h1>Bem-vindo ao Meu Site!</h1>
-        <p>Este é um site moderno e estilizado com CSS.</p>
-    </header>
-
-    <section class="container">
-        <div class="box animacao" id="sobre">
-            <h2>Sobre</h2>
-            <p>Este site foi criado como parte do meu aprendizado em desenvolvimento web.</p>
-        </div>
-
-        <div class="box animacao" id="servicos">
-            <h2>Serviços</h2>
-            <p>Criação de sites, blogs e páginas personalizadas para negócios e projetos.</p>
-        </div>
-
-        <div class="box animacao" id="contato">
-            <h2>Contato</h2>
-            <p>Preencha o formulário abaixo para entrar em contato.</p>
-        </div>
-    </section>
-
-    <form id="form-contato">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required>
-
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="_replyto" required>
-
-        <label for="mensagem">Mensagem:</label>
-        <textarea id="mensagem" name="mensagem" required></textarea>
-
-        <button type="submit">Enviar</button>
-    </form>
-
-    <p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;">Mensagem enviada com sucesso!</p>
-
-    <footer>
-        <p>&copy; 2024 Meu Site. Todos os direitos reservados.</p>
-    </footer>
-
-    <button id="btn-topo">↑</button>
     <h2>Registro de Pendências - Ventos de Serra do Mel II</h2>
 
-<form id="form-relatorio">
-    <label for="usuario">Usuário:</label>
-    <input type="text" id="usuario" placeholder="Seu nome" required>
+    <form id="form-relatorio">
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" placeholder="Seu nome" required>
 
-    <label for="parque">Selecione o Parque:</label>
-    <select id="parque" required>
-        <option value="">Escolha um parque...</option>
-        <option value="VPB III">VPB III</option>
-        <option value="VPB IV">VPB IV</option>
-        <option value="VMA I">VMA I</option>
-        <option value="VMA II">VMA II</option>
-    </select>
+        <label for="parque">Selecione o Parque:</label>
+        <select id="parque" required>
+            <option value="">Escolha um parque...</option>
+            <option value="VPB III">VPB III</option>
+            <option value="VPB IV">VPB IV</option>
+            <option value="VMA I">VMA I</option>
+            <option value="VMA II">VMA II</option>
+        </select>
 
-    <label for="maquina">Selecione a Máquina:</label>
-    <select id="maquina" required>
-        <option value="">Escolha um parque primeiro...</option>
-    </select>
+        <label for="maquina">Selecione a Máquina:</label>
+        <select id="maquina" required>
+            <option value="">Escolha um parque primeiro...</option>
+        </select>
 
-    <label for="pendencia">Pendência Encontrada:</label>
-    <select id="pendencia">
-        <option value="">Escolha uma pendência...</option>
-    </select>
+        <label for="pendencia">Pendência Encontrada:</label>
+        <select id="pendencia">
+            <option value="">Escolha uma pendência...</option>
+        </select>
 
-    <label for="nova-pendencia">Ou crie uma nova pendência:</label>
-    <input type="text" id="nova-pendencia" placeholder="Nova pendência">
+        <label for="nova-pendencia">Ou crie uma nova pendência:</label>
+        <input type="text" id="nova-pendencia" placeholder="Nova pendência">
 
-    <label for="data">Data:</label>
-    <input type="date" id="data" required>
+        <label for="data">Data:</label>
+        <input type="date" id="data" required>
 
-    <label for="fotos">Inserir Fotos:</label>
-    <input type="file" id="fotos" multiple accept="image/*">
+        <label for="fotos">Inserir Fotos:</label>
+        <input type="file" id="fotos" multiple accept="image/*">
 
-    <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
-    <button type="submit">Gerar Relatório</button>
-</form>
+        <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
+        <button type="submit">Gerar Relatório</button>
+    </form>
 
-<p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;"></p>
-<p id="mensagem-erro" style="display: none; color: red; font-weight: bold;"></p>
+    <p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;"></p>
+    <p id="mensagem-erro" style="display: none; color: red; font-weight: bold;"></p>
 
     <!-- Firebase SDK (Versão Compatível) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -121,49 +71,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         console.log("🔥 Firebase inicializado sem erro!");
-
-        // Captura o formulário de contato
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("form-contato");
-            const mensagemSucesso = document.getElementById("mensagem-sucesso");
-
-            if (form) {
-                form.addEventListener("submit", async function (event) {
-                    event.preventDefault(); // Evita recarregar a página
-
-                    // Captura os valores do formulário
-                    const nome = document.getElementById("nome").value;
-                    const email = document.getElementById("email").value;
-                    const mensagem = document.getElementById("mensagem").value;
-
-                    try {
-                        // Salva os dados no Firestore
-                        await db.collection("mensagens").add({
-                            nome: nome,
-                            email: email,
-                            mensagem: mensagem,
-                            timestamp: new Date()
-                        });
-
-                        console.log("✅ Dados enviados para o Firestore com sucesso!");
-
-                        // Exibe mensagem de sucesso
-                        mensagemSucesso.style.display = "block";
-                        form.reset();
-
-                        // Redireciona para a página "Obrigado" após 2 segundos
-                        setTimeout(() => {
-                            window.location.href = "obrigado.html";
-                        }, 2000);
-                    } catch (error) {
-                        console.error("❌ Erro ao conectar com Firestore:", error);
-                    }
-                });
-            } else {
-                console.error("❌ ERRO: Formulário não encontrado!");
-            }
-        });
     </script>
 
+    <script src="script.js"></script>
 </body>
 </html>

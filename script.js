@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const parqueSelecionado = parqueSelect.value;
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
 
-        if (parqueSelecionado) {
+        if (parqueSelecionado && maquinasPorParque[parqueSelecionado]) {
             maquinasPorParque[parqueSelecionado].forEach(maquina => {
                 const option = document.createElement("option");
                 option.value = maquina;
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const data = doc.data();
                 const option = document.createElement("option");
                 option.value = doc.id;
-                option.textContent = ${data.codigo} - ${data.descricao};
+                option.textContent = data.codigo + " - " + data.descricao;
                 pendenciaSelect.appendChild(option);
             });
         } catch (error) {
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 usuario, parque, maquina, pendencia: codigoPendencia, data, timestamp: new Date()
             });
 
-            mensagemSucesso.innerText = ✅ Relatório salvo!;
+            mensagemSucesso.innerText = "✅ Relatório salvo!";
             mensagemSucesso.style.display = "block";
         } catch (error) {
             console.error("❌ Erro ao salvar relatório:", error);
