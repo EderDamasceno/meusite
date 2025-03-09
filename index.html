@@ -58,6 +58,46 @@
     </footer>
 
     <button id="btn-topo">↑</button>
+    <h2>Registro de Pendências - Ventos de Serra do Mel II</h2>
+
+<form id="form-relatorio">
+    <label for="usuario">Usuário:</label>
+    <input type="text" id="usuario" placeholder="Seu nome" required>
+
+    <label for="parque">Selecione o Parque:</label>
+    <select id="parque" required>
+        <option value="">Escolha um parque...</option>
+        <option value="VPB III">VPB III</option>
+        <option value="VPB IV">VPB IV</option>
+        <option value="VMA I">VMA I</option>
+        <option value="VMA II">VMA II</option>
+    </select>
+
+    <label for="maquina">Selecione a Máquina:</label>
+    <select id="maquina" required>
+        <option value="">Escolha um parque primeiro...</option>
+    </select>
+
+    <label for="pendencia">Pendência Encontrada:</label>
+    <select id="pendencia">
+        <option value="">Escolha uma pendência...</option>
+    </select>
+
+    <label for="nova-pendencia">Ou crie uma nova pendência:</label>
+    <input type="text" id="nova-pendencia" placeholder="Nova pendência">
+
+    <label for="data">Data:</label>
+    <input type="date" id="data" required>
+
+    <label for="fotos">Inserir Fotos:</label>
+    <input type="file" id="fotos" multiple accept="image/*">
+
+    <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
+    <button type="submit">Gerar Relatório</button>
+</form>
+
+<p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;"></p>
+<p id="mensagem-erro" style="display: none; color: red; font-weight: bold;"></p>
 
     <!-- Firebase SDK (Versão Compatível) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
