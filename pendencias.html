@@ -54,7 +54,7 @@
                     parqueDiv.appendChild(maquinaDiv);
 
                     // Buscar pendências no Firestore
-                    const pendenciasUl = document.getElementById(pendencias-${maquina});
+                    const pendenciasUl = document.getElementById('pendencias-${maquina}');
                     pendenciasUl.innerHTML = "";
 
                     const snapshot = await db.collection("relatorios").where("maquina", "==", maquina).get();
