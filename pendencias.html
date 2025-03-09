@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -82,18 +83,18 @@ compat.js"></script>
 
                             snapshot.forEach(async doc => {
                                 const data = doc.data();
-                                const pendenciaCodigo = data.pendencia ? data.pendencia : "Código não encontrado";
+                                const pendenciaCodigo = data.pendencia ? data.pendencia.trim() : "Código não encontrado";
                                 const dataTexto = data.data ? data.data : "Data não informada";
 
                                 let descricaoPendencia = "Descrição não encontrada";
 
                                 try {
-                                    const pendenciaSnapshot = await db.collection("pendencias").where("Código", "==", pendenciaCodigo).get();
+                                    const pendenciaSnapshot = await db.collection("pendencias").where("codigo", "==", pendenciaCodigo).get();
 
                                     if (!pendenciaSnapshot.empty) {
 
                                         pendenciaSnapshot.forEach(doc => {
-                                            descricaoPendencia = doc.data().Descrição; // Corrigido acesso ao campo "Descrição"
+                                            descricaoPendencia = doc.data().descricao; // Corrigido acesso ao campo "descricao"
                                         });
                                     } else {
                                         console.warn(`⚠️ Código ${pendenciaCodigo} não encontrado na coleção "pendencias".`);
