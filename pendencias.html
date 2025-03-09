@@ -54,12 +54,19 @@
                     parqueDiv.appendChild(maquinaDiv);
 
                     // Buscar pendências no Firestore
+                    const maquinaDiv = document.createElement("div");
+                    maquinaDiv.innerHTML = '<h4>${maquina}</h4><ul id="pendencias-${maquina}">Carregando...</ul>';
+                    parqueDiv.appendChild(maquinaDiv);
+
+                    // Agora que o elemento foi criado, podemos pegá-lo
                     const pendenciasUl = document.getElementById('pendencias-${maquina}');
 
                     if (!pendenciasUl) {
-                    console.error('❌ ERRO: Elemento pendencias-${maquina} não encontrado!');
-                    continue; // Evita erros caso o elemento ainda não exista
+                    console.error('❌ ERRO: Elemento pendencias-${maquina} ainda não foi criado no DOM!');
+                    continue;
                     }
+
+                    pendenciasUl.innerHTML = "";
 
                     if (pendenciasUl) {
                         pendenciasUl.innerHTML = "";
