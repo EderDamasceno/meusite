@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -15,6 +16,7 @@
         <label for="usuario">Usuário:</label>
         <input type="text" id="usuario" placeholder="Seu nome" required>
 
+
         <label for="parque">Selecione o Parque:</label>
         <select id="parque" required>
             <option value="">Escolha um parque...</option>
@@ -28,6 +30,7 @@
         <select id="maquina" required>
             <option value="">Escolha um parque primeiro...</option>
         </select>
+
 
         <label for="pendencia">Pendência Encontrada:</label>
         <select id="pendencia">
@@ -43,16 +46,20 @@
         <label for="fotos">Inserir Fotos:</label>
         <input type="file" id="fotos" multiple accept="image/*">
 
-        <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
+        <button type="button" id="adicionar-
+
+pendencia">Adicionar Outra Pendência</button>
         <button type="submit">Gerar Relatório</button>
     </form>
 
     <p id="mensagem-sucesso" style="display: none; color: green; font-weight: bold;"></p>
     <p id="mensagem-erro" style="display: none; color: red; font-weight: bold;"></p>
 
-    <!-- Firebase SDK (Versão Compatível) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
 
     <script>
         console.log("🚀 Firebase carregado diretamente pelo index.html!");
@@ -68,9 +75,11 @@
             measurementId: "G-4WW93D6ZD6"
         };
 
+
         // Inicializa Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
         console.log("🔥 Firebase inicializado sem erro!");
     </script>
 
