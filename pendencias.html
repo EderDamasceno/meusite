@@ -58,12 +58,20 @@
                     parqueDiv.appendChild(maquinaDiv);
 
                     // Agora que o elemento foi criado, podemos pegá-lo
-                    const pendenciasUl = document.getElementById('pendencias-${maquina}');
+                    const maquinaDiv = document.createElement("div");
 
-                    if (!pendenciasUl) {
-                    console.error('❌ ERRO: Elemento pendencias-${maquina} ainda não foi criado no DOM!');
-                    continue;
-                    }
+                    // Criando o elemento UL ANTES de acessá-lo
+                    const pendenciasUl = document.createElement("ul");
+                    pendenciasUl.id = 'pendencias-${maquina}';
+                    pendenciasUl.innerHTML = "Carregando...";
+
+                    // Agora adicionamos o título e a lista ao container da máquina
+                    maquinaDiv.innerHTML = '<h4>${maquina}</h4>';
+                    maquinaDiv.appendChild(pendenciasUl);
+                    parqueDiv.appendChild(maquinaDiv);
+
+                    // Agora que o elemento UL foi criado e adicionado ao DOM, podemos limpá-lo corretamente
+                    pendenciasUl.innerHTML = "";
 
                     pendenciasUl.innerHTML = "";
 
