@@ -1,7 +1,8 @@
-
 console.log("🚀 Script.js carregado e pronto!");
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM totalmente carregado!");
+
     const form = document.getElementById("form-relatorio");
     const parqueSelect = document.getElementById("parque");
     const maquinaSelect = document.getElementById("maquina");
@@ -9,9 +10,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const usuarioInput = document.getElementById("usuario");
     const dataInput = document.getElementById("data");
     const fotosInput = document.getElementById("fotos");
-    const mensagemSucesso = document.getElementById("mensagem-
-
-sucesso");
+    const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
 
     // Estrutura de máquinas por parque
@@ -22,24 +21,22 @@ sucesso");
         "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
     };
 
-
-    // Atualizar máquinas ao selecionar um parque
+    // Atualizar a lista de máquinas ao selecionar um parque
     parqueSelect.addEventListener("change", function () {
-        const parqueSelecionado = parqueSelect.value;
+        console.log("🌍 Parque selecionado:", parqueSelect.value);
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
 
-        if (parqueSelecionado && maquinasPorParque[parqueSelecionado]) {
-            maquinasPorParque[parqueSelecionado].forEach(maquina => {
+        if (parqueSelect.value in maquinasPorParque) {
+            maquinasPorParque[parqueSelect.value].forEach(maquina => {
                 const option = document.createElement("option");
                 option.value = maquina;
                 option.textContent = maquina;
-                
-
-maquinaSelect.appendChild(option);
+                maquinaSelect.appendChild(option);
             });
         }
     });
 
+    // Evento de envio do formulário
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
@@ -54,7 +51,6 @@ maquinaSelect.appendChild(option);
             return;
         }
 
-
         try {
             await db.collection("relatorios").add({
                 usuario, parque, maquina, data, timestamp: new Date()
@@ -65,6 +61,8 @@ maquinaSelect.appendChild(option);
             form.reset();
         } catch (error) {
             console.error("❌ Erro ao salvar relatório:", error);
+            mensagemErro.innerText = "Erro ao salvar relatório. Tente novamente!";
+            mensagemErro.style.display = "block";
         }
     });
 });
