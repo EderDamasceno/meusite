@@ -59,9 +59,9 @@
 
     <button id="btn-topo">↑</button>
 
-    <!-- Firebase SDK (sem import) -->
-    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
+    <!-- Firebase SDK (Versão Compatível) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
         console.log("🚀 Firebase carregado diretamente pelo index.html!");
@@ -80,9 +80,9 @@
         // Inicializa Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        console.log("🔥 Firebase inicializado sem import!");
+        console.log("🔥 Firebase inicializado sem erro!");
 
-        // Função para salvar mensagens no Firestore
+        // Captura o formulário de contato
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.getElementById("form-contato");
             const mensagemSucesso = document.getElementById("mensagem-sucesso");
