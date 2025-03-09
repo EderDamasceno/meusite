@@ -1,46 +1,85 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.querySelector("form");
+// Importa o Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+console.log("🚀 Script.js carregado e iniciando Firebase...");
+
+// Configuração do Firebase (certifique-se de usar os dados corretos do seu projeto)
+const firebaseConfig = {
+    apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+    authDomain: "meusite-132ec.firebaseapp.com",
+    projectId: "meusite-132ec",
+    storageBucket: "meusite-132ec.appspot.com",
+    messagingSenderId: "558888153171",
+    appId: "1:558888153171:web:5845f24da583581aa556a6",
+    measurementId: "G-4WW93D6ZD6"
+};
+
+// Inicializa o Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("🔥 Firebase inicializado com sucesso!");
+
+// Captura o formulário de contato
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-contato");
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
 
-    form.addEventListener("submit", function(event) {
-        event.preventDefault(); // Evita o recarregamento imediato da página
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault(); // Evita recarregar a página
 
-        // Simula o envio do formulário
-        setTimeout(() => {
-            mensagemSucesso.style.display = "block"; // Mostra a mensagem de sucesso
-            form.reset(); // Limpa os campos do formulário
+            // Captura os valores do formulário
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const mensagem = document.getElementById("mensagem").value;
 
-            // Redireciona para a página "Obrigado" após 2 segundos
-            setTimeout(() => {
-                window.location.href = "obrigado.html";
-            }, 2000);
-        }, 500);
-    });
-});
-const elementos = document.querySelectorAll(".animacao");
+            try {
+                // Salva os dados no Firestore
+                await addDoc(collection(db, "mensagens"), {
+                    nome: nome,
+                    email: email,
+                    mensagem: mensagem,
+                    timestamp: new Date()
+                });
 
-function mostrarElementos() {
-    elementos.forEach((elemento) => {
-        if (elemento.getBoundingClientRect().top < window.innerHeight - 50) {
-            elemento.classList.add("mostrar");
-        }
-    });
-}
+                console.log("✅ Dados enviados para o Firestore com sucesso!");
 
-window.addEventListener("scroll", mostrarElementos);
-mostrarElementos();
-const botaoTopo = document.getElementById("btn-topo");
+                // Exibe mensagem de sucesso
+                mensagemSucesso.style.display = "block";
+                form.reset();
 
-// Mostrar o botão quando o usuário rolar para baixo
-window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-        botaoTopo.style.display = "block";
+                // Redireciona para a página "Obrigado" após 2 segundos
+                setTimeout(() => {
+                    window.location.href = "obrigado.html";
+                }, 2000);
+            } catch (error) {
+                console.error("❌ Erro ao conectar com Firestore:", error);
+            }
+        });
     } else {
-        botaoTopo.style.display = "none";
+        console.error("❌ ERRO: Formulário não encontrado!");
     }
 });
 
-// Rolar suavemente para o topo ao clicar
-botaoTopo.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-});
+// Teste automático de Firestore ao carregar a página
+async function testarFirestore() {
+    console.log("🔍 Testando conexão com Firestore...");
+
+    try {
+        await addDoc(collection(db, "mensagens"), {
+            nome: "Teste Firestore",
+            email: "teste@email.com",
+            mensagem: "Se essa mensagem aparecer no Firestore, está funcionando!",
+            timestamp: new Date()
+        });
+
+        console.log("✅ Dados enviados para o Firestore com sucesso!");
+    } catch (error) {
+        console.error("❌ Erro ao conectar com Firestore:", error);
+    }
+}
+
+// Teste automático ao carregar o site
+testarFirestore();
