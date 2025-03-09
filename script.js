@@ -1,3 +1,4 @@
+
 console.log("🚀 Script.js carregado e pronto!");
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -5,16 +6,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     const parqueSelect = document.getElementById("parque");
     const maquinaSelect = document.getElementById("maquina");
     const pendenciaSelect = document.getElementById("pendencia");
-    const novaPendenciaInput = document.getElementById("nova-pendencia");
     const usuarioInput = document.getElementById("usuario");
     const dataInput = document.getElementById("data");
     const fotosInput = document.getElementById("fotos");
-    const mensagemSucesso = document.getElementById("mensagem-sucesso");
-    const mensagemErro = document.getElementById("mensagem-erro");
+    const mensagemSucesso = document.getElementById("mensagem-
 
-    // Configuração do Cloudinary
-    const cloudName = "dd56l8go8";  // Seu Cloud Name
-    const uploadPreset = "pendencias_upload";  // Seu Upload Preset
+sucesso");
+    const mensagemErro = document.getElementById("mensagem-erro");
 
     // Estrutura de máquinas por parque
     const maquinasPorParque = {
@@ -24,7 +22,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
     };
 
-    // Atualizar a lista de máquinas quando um parque for selecionado
+
+    // Atualizar máquinas ao selecionar um parque
     parqueSelect.addEventListener("change", function () {
         const parqueSelecionado = parqueSelect.value;
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
@@ -34,7 +33,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const option = document.createElement("option");
                 option.value = maquina;
                 option.textContent = maquina;
-                maquinaSelect.appendChild(option);
+                
+
+maquinaSelect.appendChild(option);
             });
         }
     });
@@ -46,7 +47,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const maquina = maquinaSelect.value;
         const usuario = usuarioInput.value;
         const data = dataInput.value;
-        let fotosUrls = [];
 
         if (!parque || !maquina || !usuario || !data) {
             mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
@@ -54,63 +54,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        // Upload das fotos para o Cloudinary
-        if (fotosInput.files.length > 0) {
-            for (let file of fotosInput.files) {
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("upload_preset", uploadPreset);
 
-                try {
-                    const response = await fetch(https://api.cloudinary.com/v1_1/${cloudName}/image/upload, {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    const result = await response.json();
-                    if (result.secure_url) {
-                        fotosUrls.push(result.secure_url); // Obtém o link seguro da imagem
-                    }
-                } catch (error) {
-                    console.error("❌ Erro ao enviar imagem para Cloudinary:", error);
-                    mensagemErro.innerText = "Erro ao enviar imagem. Tente novamente!";
-                    mensagemErro.style.display = "block";
-                    return;
-                }
-            }
-        }
-
-        // Salvar os dados no Firestore
         try {
             await db.collection("relatorios").add({
-                usuario, parque, maquina, data, fotos: fotosUrls, timestamp: new Date()
+                usuario, parque, maquina, data, timestamp: new Date()
             });
 
-            mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+            mensagemSucesso.innerText = "✅ Relatório salvo!";
             mensagemSucesso.style.display = "block";
             form.reset();
         } catch (error) {
-            console.error("❌ Erro ao salvar relatório no Firestore:", error);
-            mensagemErro.innerText = "Erro ao salvar relatório. Tente novamente!";
-            mensagemErro.style.display = "block";
+            console.error("❌ Erro ao salvar relatório:", error);
         }
     });
-
-    // Carregar pendências existentes do Firestore
-    async function carregarPendencias() {
-        pendenciaSelect.innerHTML = '<option value="">Escolha uma pendência...</option>';
-        try {
-            const snapshot = await db.collection("pendencias").get();
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const option = document.createElement("option");
-                option.value = data.codigo;
-                option.textContent = ${data.codigo} - ${data.descricao};
-                pendenciaSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error("❌ Erro ao carregar pendências:", error);
-        }
-    }
-    await carregarPendencias();
 });
