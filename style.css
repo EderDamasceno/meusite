@@ -203,3 +203,10 @@ button:hover {
     margin-top: 10px;
     font-size: 14px;
 }
+.pendencia-foto {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    display: block;
+}

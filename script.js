@@ -74,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
                     let fotosHtml = "";
                     if (data.fotos && data.fotos.length > 0) {
-                        fotosHtml = `<div class='fotos-container' style='display: flex; gap: 10px; flex-wrap: wrap;'>` + 
-                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' style='max-width: 150px; height: auto; border-radius: 5px; object-fit: cover;' />`).join('') + 
+                        fotosHtml = `<div class='fotos-container'>` + 
+                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
                             `</div>`;
                     }
     
