@@ -40,12 +40,15 @@ document.addEventListener("DOMContentLoaded", function () {
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
 
         if (maquinasPorParque[parqueSelect.value]) {
-            maquinasPorParque[parqueSelect.value].forEach(maquina => {
-                const option = document.createElement("option");
-                option.value = maquina;
-                option.textContent = maquina;
-                maquinaSelect.appendChild(option);
-            });
+            setTimeout(() => {
+                maquinasPorParque[parqueSelect.value].forEach(maquina => {
+                    const option = document.createElement("option");
+                    option.value = maquina;
+                    option.textContent = maquina;
+                    maquinaSelect.appendChild(option);
+                });
+                console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
+            }, 200);
         }
     });
 
