@@ -30,28 +30,63 @@ document.addEventListener("DOMContentLoaded", function () {
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    if (parqueSelect && maquinaSelect) {
-        console.log("🔄 Configurando seleção de máquinas...");
-        const maquinasPorParque = {
-            "VPB III": ["VPB III-01", "VPB III-02", "VPB III-03", "VPB III-04", "VPB III-05", "VPB III-06", "VPB III-07", "VPB III-08", "VPB III-09"],
-            "VPB IV": ["VPB IV-01", "VPB IV-02", "VPB IV-03", "VPB IV-04", "VPB IV-05", "VPB IV-06", "VPB IV-07", "VPB IV-08", "VPB IV-09"],
-            "VMA I": ["VMA I-01", "VMA I-02", "VMA I-03", "VMA I-04", "VMA I-05", "VMA I-06", "VMA I-07", "VMA I-08", "VMA I-09"],
-            "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
-        };
+    function gerarCodigoPendencia() {
+        return "P" + Math.floor(100 + Math.random() * 900); // Gera PXXX
+    }
+
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            mensagemSucesso.style.display = "none";
+            mensagemErro.style.display = "none";
     
-        parqueSelect.addEventListener("change", function () {
-            console.log("🌍 Parque selecionado:", parqueSelect.value);
-            maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
+            const usuario = usuarioInput.value;
+            const parque = parqueSelect.value;
+            const maquina = maquinaSelect.value;
+            const pendencia = pendenciaSelect.value || novaPendenciaInput.value;
+            const criticidade = criticidadeSelect.value;
+            const data = dataInput.value;
+            const codigoPendencia = gerarCodigoPendencia();
     
-            if (maquinasPorParque[parqueSelect.value]) {
-                maquinasPorParque[parqueSelect.value].forEach(maquina => {
-                    const option = document.createElement("option");
-                    option.value = maquina;
-                    option.textContent = maquina;
-                    maquinaSelect.appendChild(option);
-                });
-                console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
+            if (!usuario || !parque || !maquina || !pendencia || !criticidade || !data) {
+                mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
+                mensagemErro.style.display = "block";
+                return;
             }
+    
+            let fotosBase64 = [];
+            if (fotosInput.files.length > 0) {
+                for (let file of fotosInput.files) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (event) {
+                        fotosBase64.push(event.target.result);
+                    };
+                }
+            }
+    
+            setTimeout(async () => {
+                try {
+                    await db.collection("relatorios").add({
+                        codigoPendencia,
+                        usuario,
+                        parque,
+                        maquina,
+                        pendencia,
+                        criticidade,
+                        data,
+                        fotos: fotosBase64,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+                    mensagemSucesso.style.display = "block";
+                    form.reset();
+                } catch (error) {
+                    console.error("❌ Erro ao salvar relatório:", error);
+                    mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
+                    mensagemErro.style.display = "block";
+                }
+            }, 1000);
         });
     }
 
@@ -61,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
             listaParques.innerHTML = "";
     
             try {
-                const snapshot = await db.collection("relatorios").get();
+                const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
                 if (snapshot.empty) {
                     console.log("⚠️ Nenhuma pendência encontrada.");
                     listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
@@ -81,11 +116,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
     
                     pendenciaDiv.innerHTML = `
-                        <h3>${data.codigoPendencia} - ${data.pendencia}</h3>
+                        <h3>Código: ${data.codigoPendencia}</h3>
+                        <p><strong>Pendência:</strong> ${data.pendencia}</p>
                         <p><strong>Máquina:</strong> ${data.maquina}</p>
                         <p><strong>Usuário:</strong> ${data.usuario}</p>
                         <p><strong>Data:</strong> ${data.data}</p>
-                        <p><strong>Criticidade:</strong> ${data.criticidade}</p>
+                        <p><strong>Criticidade:</strong> <span class='criticidade ${data.criticidade.toLowerCase()}'>${data.criticidade}</span></p>
                         ${fotosHtml}
                     `;
                     listaParques.appendChild(pendenciaDiv);
