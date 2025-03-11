@@ -14,15 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
 
-    // Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
-        authDomain: "meusite-132ec.firebaseapp.com",
-        projectId: "meusite-132ec",
-        storageBucket: "meusite-132ec.appspot.com",
-        messagingSenderId: "558888153171",
-        appId: "1:558888153171:web:5845f24da583581aa556a6",
-        measurementId: "G-4WW93D6ZD6"
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_AUTH_DOMAIN",
+        projectId: "SEU_PROJECT_ID",
+        storageBucket: "SEU_STORAGE_BUCKET",
+        messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+        appId: "SEU_APP_ID"
     };
     
     firebase.initializeApp(firebaseConfig);
@@ -50,29 +48,63 @@ document.addEventListener("DOMContentLoaded", function () {
             for (let file of fotosInput.files) {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = function () {
-                    fotosBase64.push(reader.result);
+                reader.onload = function (event) {
+                    fotosBase64.push(event.target.result);
                 };
             }
         }
 
-        try {
-            await db.collection("relatorios").add({
-                usuario,
-                parque,
-                maquina,
-                pendencia,
-                data,
-                fotos: fotosBase64,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
-            mensagemSucesso.style.display = "block";
-            form.reset();
-        } catch (error) {
-            console.error("❌ Erro ao salvar relatório:", error);
-            mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
-            mensagemErro.style.display = "block";
-        }
+        setTimeout(async () => {
+            try {
+                await db.collection("relatorios").add({
+                    usuario,
+                    parque,
+                    maquina,
+                    pendencia,
+                    data,
+                    fotos: fotosBase64,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+                mensagemSucesso.style.display = "block";
+                form.reset();
+            } catch (error) {
+                console.error("❌ Erro ao salvar relatório:", error);
+                mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
+                mensagemErro.style.display = "block";
+            }
+        }, 1000);
     });
+
+    async function carregarPendencias() {
+        const listaParques = document.getElementById("lista-parques");
+        listaParques.innerHTML = "";
+
+        try {
+            const snapshot = await db.collection("relatorios").get();
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const pendenciaDiv = document.createElement("div");
+                pendenciaDiv.classList.add("pendencia-box");
+
+                let fotosHtml = "";
+                if (data.fotos && data.fotos.length > 0) {
+                    fotosHtml = `<div class='fotos-container'>` + 
+                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
+                        `</div>`;
+                }
+
+                pendenciaDiv.innerHTML = `
+                    <h3>${data.pendencia} - ${data.maquina}</h3>
+                    <p><strong>Usuário:</strong> ${data.usuario}</p>
+                    <p><strong>Data:</strong> ${data.data}</p>
+                    ${fotosHtml}
+                `;
+                listaParques.appendChild(pendenciaDiv);
+            });
+        } catch (error) {
+            console.error("❌ Erro ao carregar pendências:", error);
+        }
+    }
+    document.addEventListener("DOMContentLoaded", carregarPendencias);
 });

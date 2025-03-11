@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,118 +7,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <h2>Pendências das Máquinas - Ventos de Serra do Mel II</h2>
-
     <div id="lista-parques"></div>
-
+    <a href="index.html" class="botao-voltar">Voltar à Página Inicial</a>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-
-
-compat.js"></script>
-
-    <script>
-        console.log("🚀 Firebase carregado na página de pendências!");
-
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
-            authDomain: "meusite-132ec.firebaseapp.com",
-            projectId: "meusite-132ec",
-            storageBucket: "meusite-132ec.appspot.com",
-            messagingSenderId: "558888153171",
-            appId: "1:558888153171:web:5845f24da583581aa556a6",
-            measurementId: "G-4WW93D6ZD6"
-
-        };
-
-        // Inicializa Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        async function carregarPendencias() {
-            const listaParques = document.getElementById("lista-parques");
-            listaParques.innerHTML = "";
-
-            const parques = ["VPB III", "VPB IV", "VMA I", "VMA II"];
-
-            for (let parque of parques) {
-                const parqueDiv = document.createElement("div");
-                parqueDiv.innerHTML = `<h3>${parque}</h3>`;
-
-                const maquinas = [
-                    `${parque}-01`, `${parque}-02`, 
-
-`${parque}-03`, `${parque}-04`, 
-                    `${parque}-05`, `${parque}-06`, `${parque}-07`, `${parque}-08`, `${parque}-09`
-                ];
-
-                for (let maquina of maquinas) {
-                    const maquinaDiv = document.createElement("div");
-
-                    const tituloMaquina = document.createElement("h4");
-                    tituloMaquina.textContent = maquina;
-
-                    const pendenciasUl = document.createElement("ul");
-                    pendenciasUl.id = `pendencias-${maquina}`;
-                    pendenciasUl.innerHTML = "Carregando...";
-
-                    maquinaDiv.appendChild(tituloMaquina);
-                    maquinaDiv.appendChild(pendenciasUl);
-                    parqueDiv.appendChild(maquinaDiv);
-
-                    pendenciasUl.innerHTML = "";
-
-                    try {
-                        const snapshot = await db.collection("relatorios").where("maquina", "==", maquina).get();
-
-                        if (snapshot.empty) {
-                            console.warn(`⚠️ Nenhuma pendência encontrada para ${maquina}.`);
-                            pendenciasUl.innerHTML = "<li>Sem pendências registradas.</li>";
-                        } else {
-                            pendenciasUl.innerHTML = 
-
-""; // Limpa a lista antes de adicionar itens
-
-                            snapshot.forEach(async doc => {
-                                const data = doc.data();
-                                const pendenciaCodigo = data.pendencia ? data.pendencia.trim() : "Código não encontrado";
-                                const dataTexto = data.data ? data.data : "Data não informada";
-
-                                let descricaoPendencia = "Descrição não encontrada";
-
-                                try {
-                                    const pendenciaSnapshot = await db.collection("pendencias").where("codigo", "==", pendenciaCodigo).get();
-
-                                    if (!pendenciaSnapshot.empty) {
-
-                                        pendenciaSnapshot.forEach(doc => {
-                                            descricaoPendencia = doc.data().descricao; // Corrigido acesso ao campo "descricao"
-                                        });
-                                    } else {
-                                        console.warn(`⚠️ Código ${pendenciaCodigo} não encontrado na coleção "pendencias".`);
-                                    }
-                                } catch (error) {
-                                    console.error(`❌ Erro ao buscar descrição da pendência ${pendenciaCodigo}:`, error);
-                                }
-
-                                const li = document.createElement("li");
-                                li.textContent = `${pendenciaCodigo} - ${descricaoPendencia} - ${dataTexto}`;
-                                pendenciasUl.appendChild(li);
-                            });
-                        }
-                    } catch (error) {
-                        console.error(`❌ Erro ao buscar pendências para ${maquina}:`, error);
-                        pendenciasUl.innerHTML = "<li>Erro ao carregar pendências.</li>";
-                    }
-                }
-                listaParques.appendChild(parqueDiv);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", carregarPendencias);
-    </script>
-
-
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
