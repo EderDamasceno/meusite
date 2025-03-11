@@ -36,8 +36,10 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     parqueSelect.addEventListener("change", function () {
+        console.log("🌍 Parque selecionado:", parqueSelect.value);
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
-        if (parqueSelect.value in maquinasPorParque) {
+
+        if (maquinasPorParque[parqueSelect.value]) {
             maquinasPorParque[parqueSelect.value].forEach(maquina => {
                 const option = document.createElement("option");
                 option.value = maquina;
