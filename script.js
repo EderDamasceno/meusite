@@ -14,17 +14,38 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
 
+    // Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
-        authDomain: "SEU_AUTH_DOMAIN",
-        projectId: "SEU_PROJECT_ID",
-        storageBucket: "SEU_STORAGE_BUCKET",
-        messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-        appId: "SEU_APP_ID"
+        apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+        authDomain: "meusite-132ec.firebaseapp.com",
+        projectId: "meusite-132ec",
+        storageBucket: "meusite-132ec.appspot.com",
+        messagingSenderId: "558888153171",
+        appId: "1:558888153171:web:5845f24da583581aa556a6",
+        measurementId: "G-4WW93D6ZD6"
     };
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    const maquinasPorParque = {
+        "VPB III": ["VPB III-01", "VPB III-02", "VPB III-03", "VPB III-04", "VPB III-05", "VPB III-06", "VPB III-07", "VPB III-08", "VPB III-09"],
+        "VPB IV": ["VPB IV-01", "VPB IV-02", "VPB IV-03", "VPB IV-04", "VPB IV-05", "VPB IV-06", "VPB IV-07", "VPB IV-08", "VPB IV-09"],
+        "VMA I": ["VMA I-01", "VMA I-02", "VMA I-03", "VMA I-04", "VMA I-05", "VMA I-06", "VMA I-07", "VMA I-08", "VMA I-09"],
+        "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
+    };
+
+    parqueSelect.addEventListener("change", function () {
+        maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
+        if (parqueSelect.value in maquinasPorParque) {
+            maquinasPorParque[parqueSelect.value].forEach(maquina => {
+                const option = document.createElement("option");
+                option.value = maquina;
+                option.textContent = maquina;
+                maquinaSelect.appendChild(option);
+            });
+        }
+    });
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -75,36 +96,4 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }, 1000);
     });
-
-    async function carregarPendencias() {
-        const listaParques = document.getElementById("lista-parques");
-        listaParques.innerHTML = "";
-
-        try {
-            const snapshot = await db.collection("relatorios").get();
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const pendenciaDiv = document.createElement("div");
-                pendenciaDiv.classList.add("pendencia-box");
-
-                let fotosHtml = "";
-                if (data.fotos && data.fotos.length > 0) {
-                    fotosHtml = `<div class='fotos-container'>` + 
-                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
-                        `</div>`;
-                }
-
-                pendenciaDiv.innerHTML = `
-                    <h3>${data.pendencia} - ${data.maquina}</h3>
-                    <p><strong>Usuário:</strong> ${data.usuario}</p>
-                    <p><strong>Data:</strong> ${data.data}</p>
-                    ${fotosHtml}
-                `;
-                listaParques.appendChild(pendenciaDiv);
-            });
-        } catch (error) {
-            console.error("❌ Erro ao carregar pendências:", error);
-        }
-    }
-    document.addEventListener("DOMContentLoaded", carregarPendencias);
 });
