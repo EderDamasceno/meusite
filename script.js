@@ -14,14 +14,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
 
-    // Firebase Configuração
+    // Configuração do Firebase
     const firebaseConfig = {
-        apiKey: "SUA_API_KEY",
-        authDomain: "SEU_AUTH_DOMAIN",
-        projectId: "SEU_PROJECT_ID",
-        storageBucket: "SEU_STORAGE_BUCKET",
-        messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-        appId: "SEU_APP_ID",
+        apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+        authDomain: "meusite-132ec.firebaseapp.com",
+        projectId: "meusite-132ec",
+        storageBucket: "meusite-132ec.appspot.com",
+        messagingSenderId: "558888153171",
+        appId: "1:558888153171:web:5845f24da583581aa556a6",
+        measurementId: "G-4WW93D6ZD6"
     };
     
     firebase.initializeApp(firebaseConfig);
