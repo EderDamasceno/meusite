@@ -14,7 +14,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
 
-    // Estrutura de máquinas por parque
+    // Firebase Configuração
+    const firebaseConfig = {
+        apiKey: "SUA_API_KEY",
+        authDomain: "SEU_AUTH_DOMAIN",
+        projectId: "SEU_PROJECT_ID",
+        storageBucket: "SEU_STORAGE_BUCKET",
+        messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+        appId: "SEU_APP_ID",
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const maquinasPorParque = {
         "VPB III": ["VPB III-01", "VPB III-02", "VPB III-03", "VPB III-04", "VPB III-05", "VPB III-06", "VPB III-07", "VPB III-08", "VPB III-09"],
         "VPB IV": ["VPB IV-01", "VPB IV-02", "VPB IV-03", "VPB IV-04", "VPB IV-05", "VPB IV-06", "VPB IV-07", "VPB IV-08", "VPB IV-09"],
@@ -23,9 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     parqueSelect.addEventListener("change", function () {
-        console.log("🌍 Parque selecionado:", parqueSelect.value);
         maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
-
         if (parqueSelect.value in maquinasPorParque) {
             maquinasPorParque[parqueSelect.value].forEach(maquina => {
                 const option = document.createElement("option");
@@ -41,8 +51,34 @@ document.addEventListener("DOMContentLoaded", function () {
         mensagemSucesso.style.display = "none";
         mensagemErro.style.display = "none";
 
-        mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
-        mensagemSucesso.style.display = "block";
-        form.reset();
+        const usuario = usuarioInput.value;
+        const parque = parqueSelect.value;
+        const maquina = maquinaSelect.value;
+        const pendencia = pendenciaSelect.value || novaPendenciaInput.value;
+        const data = dataInput.value;
+
+        if (!usuario || !parque || !maquina || !pendencia || !data) {
+            mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
+            mensagemErro.style.display = "block";
+            return;
+        }
+
+        try {
+            await db.collection("relatorios").add({
+                usuario,
+                parque,
+                maquina,
+                pendencia,
+                data,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+            mensagemSucesso.style.display = "block";
+            form.reset();
+        } catch (error) {
+            console.error("❌ Erro ao salvar relatório:", error);
+            mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
+            mensagemErro.style.display = "block";
+        }
     });
 });
