@@ -54,59 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (form) {
-        console.log("📋 Configurando envio do formulário...");
-        form.addEventListener("submit", async function (event) {
-            event.preventDefault();
-            mensagemSucesso.style.display = "none";
-            mensagemErro.style.display = "none";
-    
-            const usuario = usuarioInput.value;
-            const parque = parqueSelect.value;
-            const maquina = maquinaSelect.value;
-            const pendencia = pendenciaSelect.value || novaPendenciaInput.value;
-            const data = dataInput.value;
-    
-            if (!usuario || !parque || !maquina || !pendencia || !data) {
-                mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
-                mensagemErro.style.display = "block";
-                return;
-            }
-    
-            let fotosBase64 = [];
-            if (fotosInput.files.length > 0) {
-                for (let file of fotosInput.files) {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = function (event) {
-                        fotosBase64.push(event.target.result);
-                    };
-                }
-            }
-    
-            setTimeout(async () => {
-                try {
-                    await db.collection("relatorios").add({
-                        usuario,
-                        parque,
-                        maquina,
-                        pendencia,
-                        data,
-                        fotos: fotosBase64,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
-                    mensagemSucesso.style.display = "block";
-                    form.reset();
-                } catch (error) {
-                    console.error("❌ Erro ao salvar relatório:", error);
-                    mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
-                    mensagemErro.style.display = "block";
-                }
-            }, 1000);
-        });
-    }
-    
     if (listaParques) {
         console.log("📌 Carregando pendências...");
         async function carregarPendencias() {
@@ -128,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     let fotosHtml = "";
                     if (data.fotos && data.fotos.length > 0) {
                         fotosHtml = `<div class='fotos-container'>` + 
-                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
+                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' style='max-width: 200px; height: auto; border-radius: 5px;' />`).join('') + 
                             `</div>`;
                     }
     
