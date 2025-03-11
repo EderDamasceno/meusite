@@ -101,4 +101,42 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }, 1000);
     });
+
+    async function carregarPendencias() {
+        const listaParques = document.getElementById("lista-parques");
+        listaParques.innerHTML = "";
+
+        try {
+            const snapshot = await db.collection("relatorios").get();
+            if (snapshot.empty) {
+                console.log("⚠️ Nenhuma pendência encontrada.");
+                listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const pendenciaDiv = document.createElement("div");
+                pendenciaDiv.classList.add("pendencia-box");
+
+                let fotosHtml = "";
+                if (data.fotos && data.fotos.length > 0) {
+                    fotosHtml = `<div class='fotos-container'>` + 
+                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
+                        `</div>`;
+                }
+
+                pendenciaDiv.innerHTML = `
+                    <h3>${data.pendencia} - ${data.maquina}</h3>
+                    <p><strong>Usuário:</strong> ${data.usuario}</p>
+                    <p><strong>Data:</strong> ${data.data}</p>
+                    ${fotosHtml}
+                `;
+                listaParques.appendChild(pendenciaDiv);
+            });
+        } catch (error) {
+            console.error("❌ Erro ao carregar pendências:", error);
+        }
+    }
+    document.addEventListener("DOMContentLoaded", carregarPendencias);
 });
