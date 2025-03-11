@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const novaPendenciaInput = document.getElementById("nova-pendencia");
     const usuarioInput = document.getElementById("usuario");
     const dataInput = document.getElementById("data");
+    const criticidadeSelect = document.getElementById("criticidade");
     const fotosInput = document.getElementById("fotos");
     const mensagemSucesso = document.getElementById("mensagem-sucesso");
     const mensagemErro = document.getElementById("mensagem-erro");
@@ -80,9 +81,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
     
                     pendenciaDiv.innerHTML = `
-                        <h3>${data.pendencia} - ${data.maquina}</h3>
+                        <h3>${data.codigoPendencia} - ${data.pendencia}</h3>
+                        <p><strong>Máquina:</strong> ${data.maquina}</p>
                         <p><strong>Usuário:</strong> ${data.usuario}</p>
                         <p><strong>Data:</strong> ${data.data}</p>
+                        <p><strong>Criticidade:</strong> ${data.criticidade}</p>
                         ${fotosHtml}
                     `;
                     listaParques.appendChild(pendenciaDiv);
