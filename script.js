@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const db = firebase.firestore();
 
     if (parqueSelect && maquinaSelect) {
+        console.log("🔄 Configurando seleção de máquinas...");
         const maquinasPorParque = {
             "VPB III": ["VPB III-01", "VPB III-02", "VPB III-03", "VPB III-04", "VPB III-05", "VPB III-06", "VPB III-07", "VPB III-08", "VPB III-09"],
             "VPB IV": ["VPB IV-01", "VPB IV-02", "VPB IV-03", "VPB IV-04", "VPB IV-05", "VPB IV-06", "VPB IV-07", "VPB IV-08", "VPB IV-09"],
@@ -42,20 +43,19 @@ document.addEventListener("DOMContentLoaded", function () {
             maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
     
             if (maquinasPorParque[parqueSelect.value]) {
-                setTimeout(() => {
-                    maquinasPorParque[parqueSelect.value].forEach(maquina => {
-                        const option = document.createElement("option");
-                        option.value = maquina;
-                        option.textContent = maquina;
-                        maquinaSelect.appendChild(option);
-                    });
-                    console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
-                }, 200);
+                maquinasPorParque[parqueSelect.value].forEach(maquina => {
+                    const option = document.createElement("option");
+                    option.value = maquina;
+                    option.textContent = maquina;
+                    maquinaSelect.appendChild(option);
+                });
+                console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
             }
         });
     }
 
     if (form) {
+        console.log("📋 Configurando envio do formulário...");
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             mensagemSucesso.style.display = "none";
@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     if (listaParques) {
+        console.log("📌 Carregando pendências...");
         async function carregarPendencias() {
             listaParques.innerHTML = "";
     
