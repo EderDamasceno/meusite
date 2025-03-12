@@ -6,8 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("form-relatorio");
     const parqueSelect = document.getElementById("parque");
     const maquinaSelect = document.getElementById("maquina");
-    const pendenciaSelect = document.getElementById("pendencia");
-    const novaPendenciaInput = document.getElementById("nova-pendencia");
+    const pendenciasContainer = document.getElementById("pendencias-container");
+    const pendenciaDatalist = document.getElementById("pendencias-existentes");
+    const adicionarPendenciaBtn = document.getElementById("adicionar-pendencia");
     const usuarioInput = document.getElementById("usuario");
     const dataInput = document.getElementById("data");
     const criticidadeSelect = document.getElementById("criticidade");
@@ -34,6 +35,40 @@ document.addEventListener("DOMContentLoaded", function () {
         return "P" + Math.floor(100 + Math.random() * 900); // Gera PXXX
     }
 
+    function adicionarPendencia() {
+        const pendenciaItem = document.createElement("div");
+        pendenciaItem.classList.add("pendencia-item");
+        pendenciaItem.innerHTML = `
+            <input list="pendencias-existentes" placeholder="Escolha ou crie uma pendência" required>
+            <button type="button" class="remover-pendencia">Remover</button>
+        `;
+        pendenciasContainer.appendChild(pendenciaItem);
+
+        pendenciaItem.querySelector(".remover-pendencia").addEventListener("click", function () {
+            pendenciaItem.remove();
+        });
+    }
+
+    adicionarPendenciaBtn.addEventListener("click", adicionarPendencia);
+
+    async function carregarPendenciasExistentes() {
+        try {
+            const snapshot = await db.collection("relatorios").get();
+            snapshot.forEach(doc => {
+                const pendencia = doc.data().pendencia;
+                const option = document.createElement("option");
+                option.value = pendencia;
+                pendenciaDatalist.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar pendências existentes:", error);
+        }
+    }
+
+    if (pendenciaDatalist) {
+        carregarPendenciasExistentes();
+    }
+
     if (form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
@@ -43,12 +78,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const usuario = usuarioInput.value;
             const parque = parqueSelect.value;
             const maquina = maquinaSelect.value;
-            const pendencia = pendenciaSelect.value || novaPendenciaInput.value;
             const criticidade = criticidadeSelect.value;
             const data = dataInput.value;
             const codigoPendencia = gerarCodigoPendencia();
     
-            if (!usuario || !parque || !maquina || !pendencia || !criticidade || !data) {
+            if (!usuario || !parque || !maquina || !criticidade || !data) {
                 mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
                 mensagemErro.style.display = "block";
                 return;
@@ -64,6 +98,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                 }
             }
+
+            let pendenciasSelecionadas = [];
+            document.querySelectorAll("#pendencias-container input").forEach(input => {
+                pendenciasSelecionadas.push(input.value);
+            });
     
             setTimeout(async () => {
                 try {
@@ -72,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         usuario,
                         parque,
                         maquina,
-                        pendencia,
+                        pendencias: pendenciasSelecionadas,
                         criticidade,
                         data,
                         fotos: fotosBase64,
@@ -88,48 +127,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }, 1000);
         });
-    }
-
-    if (listaParques) {
-        console.log("📌 Carregando pendências...");
-        async function carregarPendencias() {
-            listaParques.innerHTML = "";
-    
-            try {
-                const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
-                if (snapshot.empty) {
-                    console.log("⚠️ Nenhuma pendência encontrada.");
-                    listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
-                    return;
-                }
-    
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const pendenciaDiv = document.createElement("div");
-                    pendenciaDiv.classList.add("pendencia-box");
-    
-                    let fotosHtml = "";
-                    if (data.fotos && data.fotos.length > 0) {
-                        fotosHtml = `<div class='fotos-container'>` + 
-                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
-                            `</div>`;
-                    }
-    
-                    pendenciaDiv.innerHTML = `
-                        <h3>Código: ${data.codigoPendencia}</h3>
-                        <p><strong>Pendência:</strong> ${data.pendencia}</p>
-                        <p><strong>Máquina:</strong> ${data.maquina}</p>
-                        <p><strong>Usuário:</strong> ${data.usuario}</p>
-                        <p><strong>Data:</strong> ${data.data}</p>
-                        <p><strong>Criticidade:</strong> <span class='criticidade ${data.criticidade.toLowerCase()}'>${data.criticidade}</span></p>
-                        ${fotosHtml}
-                    `;
-                    listaParques.appendChild(pendenciaDiv);
-                });
-            } catch (error) {
-                console.error("❌ Erro ao carregar pendências:", error);
-            }
-        }
-        carregarPendencias();
     }
 });

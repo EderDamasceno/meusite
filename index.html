@@ -28,13 +28,26 @@
             <option value="">Escolha um parque primeiro...</option>
         </select>
 
-        <label for="pendencia">Pendência Encontrada:</label>
-        <select id="pendencia">
-            <option value="">Escolha uma pendência...</option>
-        </select>
+        <div id="pendencias-container">
+            <div class="pendencia-item">
+                <label for="pendencia">Pendência Encontrada:</label>
+                <input list="pendencias-existentes" id="pendencia" placeholder="Escolha ou crie uma pendência" required>
+                <datalist id="pendencias-existentes">
+                    <!-- Pendências existentes serão carregadas aqui -->
+                </datalist>
+                <button type="button" class="remover-pendencia">Remover</button>
+            </div>
+        </div>
 
-        <label for="nova-pendencia">Ou crie uma nova pendência:</label>
-        <input type="text" id="nova-pendencia" placeholder="Nova pendência">
+        <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
+
+        <label for="criticidade">Criticidade:</label>
+        <select id="criticidade" required>
+            <option value="">Selecione a criticidade...</option>
+            <option value="Baixa">Baixa</option>
+            <option value="Média">Média</option>
+            <option value="Alta">Alta</option>
+        </select>
 
         <label for="data">Data:</label>
         <input type="date" id="data" required>
@@ -42,7 +55,6 @@
         <label for="fotos">Inserir Fotos:</label>
         <input type="file" id="fotos" multiple accept="image/*">
 
-        <button type="button" id="adicionar-pendencia">Adicionar Outra Pendência</button>
         <button type="submit">Gerar Relatório</button>
     </form>
 
@@ -51,6 +63,18 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+            authDomain: "meusite-132ec.firebaseapp.com",
+            projectId: "meusite-132ec",
+            storageBucket: "meusite-132ec.appspot.com",
+            messagingSenderId: "558888153171",
+            appId: "1:558888153171:web:5845f24da583581aa556a6",
+            measurementId: "G-4WW93D6ZD6"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
