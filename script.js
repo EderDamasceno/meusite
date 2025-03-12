@@ -55,61 +55,67 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    async function carregarPendenciasExistentes() {
-        try {
-            const snapshot = await db.collection("relatorios").get();
-            snapshot.forEach(doc => {
-                const pendencia = doc.data().pendencia;
-                const option = document.createElement("option");
-                option.value = pendencia;
-                pendenciaDatalist.appendChild(option);
+    function obterFotosBase64(arquivos) {
+        return new Promise(resolve => {
+            let fotosBase64 = [];
+            let contador = 0;
+            if (arquivos.length === 0) resolve([]);
+
+            for (let file of arquivos) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (event) {
+                    fotosBase64.push(event.target.result);
+                    contador++;
+                    if (contador === arquivos.length) resolve(fotosBase64);
+                };
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            mensagemSucesso.style.display = "none";
+            mensagemErro.style.display = "none";
+
+            const usuario = usuarioInput.value;
+            const parque = parqueSelect.value;
+            const maquina = maquinaSelect.value;
+            const criticidade = criticidadeSelect.value;
+            const data = dataInput.value;
+            let pendenciasSelecionadas = [];
+            document.querySelectorAll("#pendencias-container input").forEach(input => {
+                pendenciasSelecionadas.push(input.value);
             });
-        } catch (error) {
-            console.error("Erro ao carregar pendências existentes:", error);
-        }
-    }
 
-    if (pendenciaDatalist) {
-        carregarPendenciasExistentes();
-    }
-
-    async function carregarPendencias() {
-        if (!listaParques) return;
-        listaParques.innerHTML = "";
-
-        try {
-            const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
-            if (snapshot.empty) {
-                listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
+            if (!usuario || !parque || !maquina || !criticidade || !data || pendenciasSelecionadas.length === 0) {
+                mensagemErro.innerText = "❌ Preencha todos os campos obrigatórios!";
+                mensagemErro.style.display = "block";
                 return;
             }
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const pendenciaDiv = document.createElement("div");
-                pendenciaDiv.classList.add("pendencia-box");
-                
-                let fotosHtml = "";
-                if (data.fotos && data.fotos.length > 0) {
-                    fotosHtml = `<div class='fotos-container'>` + 
-                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
-                        `</div>`;
-                }
-                
-                pendenciaDiv.innerHTML = `
-                    <h3>Código: ${data.codigoPendencia}</h3>
-                    <p><strong>Pendência:</strong> ${data.pendencia}</p>
-                    <p><strong>Máquina:</strong> ${data.maquina}</p>
-                    <p><strong>Usuário:</strong> ${data.usuario}</p>
-                    <p><strong>Data:</strong> ${data.data}</p>
-                    <p><strong>Criticidade:</strong> <span class='criticidade ${data.criticidade.toLowerCase()}'>${data.criticidade}</span></p>
-                    ${fotosHtml}
-                `;
-                listaParques.appendChild(pendenciaDiv);
-            });
-        } catch (error) {
-            console.error("❌ Erro ao carregar pendências:", error);
-        }
+
+            const fotosBase64 = await obterFotosBase64(fotosInput.files);
+
+            try {
+                await db.collection("relatorios").add({
+                    usuario,
+                    parque,
+                    maquina,
+                    pendencias: pendenciasSelecionadas,
+                    criticidade,
+                    data,
+                    fotos: fotosBase64,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+                mensagemSucesso.style.display = "block";
+                form.reset();
+            } catch (error) {
+                console.error("❌ Erro ao salvar relatório:", error);
+                mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
+                mensagemErro.style.display = "block";
+            }
+        });
     }
-    
-    document.addEventListener("DOMContentLoaded", carregarPendencias);
 });
