@@ -55,24 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function obterFotosBase64(arquivos) {
-        return new Promise(resolve => {
-            let fotosBase64 = [];
-            let contador = 0;
-            if (arquivos.length === 0) resolve([]);
-
-            for (let file of arquivos) {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function (event) {
-                    fotosBase64.push(event.target.result);
-                    contador++;
-                    if (contador === arquivos.length) resolve(fotosBase64);
-                };
-            }
-        });
-    }
-
     async function carregarPendencias() {
         if (!listaParques) return;
         listaParques.innerHTML = "";
