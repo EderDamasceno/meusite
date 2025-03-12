@@ -38,40 +38,22 @@ document.addEventListener("DOMContentLoaded", function () {
         "VMA II": ["VMA II-01", "VMA II-02", "VMA II-03", "VMA II-04", "VMA II-05", "VMA II-06", "VMA II-07", "VMA II-08", "VMA II-09"]
     };
 
-    parqueSelect.addEventListener("change", function () {
-        console.log("🌍 Parque selecionado:", parqueSelect.value);
-        maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
+    if (parqueSelect) {
+        parqueSelect.addEventListener("change", function () {
+            console.log("🌍 Parque selecionado:", parqueSelect.value);
+            maquinaSelect.innerHTML = '<option value="">Escolha uma máquina...</option>';
 
-        if (maquinasPorParque[parqueSelect.value]) {
-            maquinasPorParque[parqueSelect.value].forEach(maquina => {
-                const option = document.createElement("option");
-                option.value = maquina;
-                option.textContent = maquina;
-                maquinaSelect.appendChild(option);
-            });
-            console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
-        }
-    });
-
-    function gerarCodigoPendencia() {
-        return "P" + Math.floor(100 + Math.random() * 900); // Gera PXXX
-    }
-
-    function adicionarPendencia() {
-        const pendenciaItem = document.createElement("div");
-        pendenciaItem.classList.add("pendencia-item");
-        pendenciaItem.innerHTML = `
-            <input list="pendencias-existentes" placeholder="Escolha ou crie uma pendência" required>
-            <button type="button" class="remover-pendencia">Remover</button>
-        `;
-        pendenciasContainer.appendChild(pendenciaItem);
-
-        pendenciaItem.querySelector(".remover-pendencia").addEventListener("click", function () {
-            pendenciaItem.remove();
+            if (maquinasPorParque[parqueSelect.value]) {
+                maquinasPorParque[parqueSelect.value].forEach(maquina => {
+                    const option = document.createElement("option");
+                    option.value = maquina;
+                    option.textContent = maquina;
+                    maquinaSelect.appendChild(option);
+                });
+                console.log("⚙️ Máquinas carregadas para", parqueSelect.value);
+            }
         });
     }
-
-    adicionarPendenciaBtn.addEventListener("click", adicionarPendencia);
 
     async function carregarPendenciasExistentes() {
         try {
@@ -90,4 +72,44 @@ document.addEventListener("DOMContentLoaded", function () {
     if (pendenciaDatalist) {
         carregarPendenciasExistentes();
     }
+
+    async function carregarPendencias() {
+        if (!listaParques) return;
+        listaParques.innerHTML = "";
+
+        try {
+            const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
+            if (snapshot.empty) {
+                listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
+                return;
+            }
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const pendenciaDiv = document.createElement("div");
+                pendenciaDiv.classList.add("pendencia-box");
+                
+                let fotosHtml = "";
+                if (data.fotos && data.fotos.length > 0) {
+                    fotosHtml = `<div class='fotos-container'>` + 
+                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
+                        `</div>`;
+                }
+                
+                pendenciaDiv.innerHTML = `
+                    <h3>Código: ${data.codigoPendencia}</h3>
+                    <p><strong>Pendência:</strong> ${data.pendencia}</p>
+                    <p><strong>Máquina:</strong> ${data.maquina}</p>
+                    <p><strong>Usuário:</strong> ${data.usuario}</p>
+                    <p><strong>Data:</strong> ${data.data}</p>
+                    <p><strong>Criticidade:</strong> <span class='criticidade ${data.criticidade.toLowerCase()}'>${data.criticidade}</span></p>
+                    ${fotosHtml}
+                `;
+                listaParques.appendChild(pendenciaDiv);
+            });
+        } catch (error) {
+            console.error("❌ Erro ao carregar pendências:", error);
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", carregarPendencias);
 });

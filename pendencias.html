@@ -3,16 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendências das Máquinas</title>
+    <title>Pendências - Ventos de Serra do Mel II</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Pendências das Máquinas - Ventos de Serra do Mel II</h2>
-    <div id="lista-parques"></div>
-    <a href="index.html" class="botao-voltar">Voltar à Página Inicial</a>
+    <h2>Pendências Registradas</h2>
+    <a href="index.html"><button>Voltar para Home</button></a>
     
+    <div id="lista-parques"></div>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="script.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe_AbmxlZYUDAaatxQ3FH5h6ZeiAK1Qq4",
+            authDomain: "meusite-132ec.firebaseapp.com",
+            projectId: "meusite-132ec",
+            storageBucket: "meusite-132ec.appspot.com",
+            messagingSenderId: "558888153171",
+            appId: "1:558888153171:web:5845f24da583581aa556a6",
+            measurementId: "G-4WW93D6ZD6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function carregarPendencias() {
+            const listaParques = document.getElementById("lista-parques");
+            listaParques.innerHTML = "";
+
+            try {
+                const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
+                if (snapshot.empty) {
+                    listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const pendenciaDiv = document.createElement("div");
+                    pendenciaDiv.classList.add("pendencia-box");
+
+                    let fotosHtml = "";
+                    if (data.fotos && data.fotos.length > 0) {
+                        fotosHtml = `<div class='fotos-container'>` + 
+                            data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
+                            `</div>`;
+                    }
+
+                    pendenciaDiv.innerHTML = `
+                        <h3>Código: ${data.codigoPendencia}</h3>
+                        <p><strong>Pendência:</strong> ${data.pendencia}</p>
+                        <p><strong>Máquina:</strong> ${data.maquina}</p>
+                        <p><strong>Usuário:</strong> ${data.usuario}</p>
+                        <p><strong>Data:</strong> ${data.data}</p>
+                        <p><strong>Criticidade:</strong> <span class='criticidade ${data.criticidade.toLowerCase()}'>${data.criticidade}</span></p>
+                        ${fotosHtml}
+                    `;
+                    listaParques.appendChild(pendenciaDiv);
+                });
+            } catch (error) {
+                console.error("❌ Erro ao carregar pendências:", error);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", carregarPendencias);
+    </script>
 </body>
 </html>
