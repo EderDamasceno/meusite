@@ -55,45 +55,52 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    async function carregarPendencias() {
-        if (!listaParques) return;
-        listaParques.innerHTML = "";
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        mensagemSucesso.style.display = "none";
+        mensagemErro.style.display = "none";
 
-        try {
-            const snapshot = await db.collection("relatorios").orderBy("timestamp", "desc").get();
-            if (snapshot.empty) {
-                listaParques.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
-                return;
+        const usuario = usuarioInput.value;
+        const parque = parqueSelect.value;
+        const maquina = maquinaSelect.value;
+        const criticidade = criticidadeSelect.value;
+        const data = dataInput.value;
+        let pendenciasSelecionadas = [];
+        document.querySelectorAll("#pendencias-container input").forEach(input => {
+            pendenciasSelecionadas.push(input.value);
+        });
+
+        let fotosBase64 = [];
+        if (fotosInput.files.length > 0) {
+            for (let file of fotosInput.files) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (event) {
+                    fotosBase64.push(event.target.result);
+                };
             }
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const pendenciaDiv = document.createElement("div");
-                pendenciaDiv.classList.add("pendencia-box");
-                
-                let fotosHtml = "";
-                if (data.fotos && data.fotos.length > 0) {
-                    fotosHtml = `<div class='fotos-container'>` + 
-                        data.fotos.map(foto => `<img src='${foto}' class='pendencia-foto' />`).join('') + 
-                        `</div>`;
-                }
-                
-                const criticidade = data.criticidade ? data.criticidade.toLowerCase() : "indefinida";
-                
-                pendenciaDiv.innerHTML = `
-                    <h3>Código: ${data.codigoPendencia}</h3>
-                    <p><strong>Pendência:</strong> ${data.pendencia}</p>
-                    <p><strong>Máquina:</strong> ${data.maquina}</p>
-                    <p><strong>Usuário:</strong> ${data.usuario}</p>
-                    <p><strong>Data:</strong> ${data.data}</p>
-                    <p><strong>Criticidade:</strong> <span class='criticidade ${criticidade}'>${data.criticidade || "Não informada"}</span></p>
-                    ${fotosHtml}
-                `;
-                listaParques.appendChild(pendenciaDiv);
-            });
-        } catch (error) {
-            console.error("❌ Erro ao carregar pendências:", error);
         }
-    }
-    
-    document.addEventListener("DOMContentLoaded", carregarPendencias);
+
+        setTimeout(async () => {
+            try {
+                await db.collection("relatorios").add({
+                    usuario,
+                    parque,
+                    maquina,
+                    pendencias: pendenciasSelecionadas,
+                    criticidade,
+                    data,
+                    fotos: fotosBase64,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                mensagemSucesso.innerText = "✅ Relatório salvo com sucesso!";
+                mensagemSucesso.style.display = "block";
+                form.reset();
+            } catch (error) {
+                console.error("❌ Erro ao salvar relatório:", error);
+                mensagemErro.innerText = "❌ Erro ao salvar relatório! Tente novamente.";
+                mensagemErro.style.display = "block";
+            }
+        }, 1000);
+    });
 });
